@@ -1,0 +1,522 @@
+// Prisma Schema for ParcelMate
+
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [postgis]
+}
+
+enum UserRole {
+  USER
+  ADMIN
+  MODERATOR
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  BANNED
+  PENDING_VERIFICATION
+}
+
+enum VerificationStatus {
+  PENDING
+  IN_PROGRESS
+  VERIFIED
+  REJECTED
+}
+
+enum TripStatus {
+  DRAFT
+  PUBLISHED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+}
+
+enum ParcelStatus {
+  DRAFT
+  REQUESTING
+  MATCHED
+  PICKED_UP
+  IN_TRANSIT
+  DELIVERED
+  CANCELLED
+  DISPUTED
+}
+
+enum ParcelSize {
+  DOCUMENT      // <= 500g
+  SMALL         // <= 2kg
+  MEDIUM        // 2-5kg
+}
+
+enum PaymentStatus {
+  PENDING
+  AUTHORIZED
+  ESCROWED
+  PARTIALLY_RELEASED
+  RELEASED
+  REFUNDED
+  FAILED
+}
+
+enum DisputeStatus {
+  OPEN
+  UNDER_REVIEW
+  RESOLVED
+  CLOSED
+}
+
+enum NotificationType {
+  TRIP_MATCH
+  PARCEL_REQUEST
+  MATCH_REQUEST
+  MATCH_APPROVED
+  MATCH_REJECTED
+  PAYMENT_RECEIVED
+  DELIVERY_UPDATE
+  VERIFICATION_STATUS
+  SYSTEM_ALERT
+}
+
+enum MatchRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  EXPIRED
+}
+
+model User {
+  id                String              @id @default(uuid())
+  email             String              @unique
+  phone             String?             @unique
+  passwordHash      String
+  firstName         String
+  lastName          String
+  role              UserRole            @default(USER)
+  status            UserStatus          @default(PENDING_VERIFICATION)
+  profilePhoto      String?
+  dateOfBirth       DateTime?
+  bio               String?
+  languages         String[]            @default([])
+
+  // Address
+  address           String?
+  city              String?
+  state             String?
+  country           String?
+  postalCode        String?
+
+  // Emergency Contact
+  emergencyContactName  String?
+  emergencyContactPhone String?
+  emergencyContactRelation String?
+
+  // Verification Documents
+  idDocumentUrl         String?
+  driverLicenseUrl      String?
+  proofOfAddressUrl     String?
+
+  // Trust & Safety
+  trustScore        Int                 @default(0)
+  isVerified        Boolean             @default(false)
+  verificationLevel VerificationStatus  @default(PENDING)
+
+  // Stripe Connect
+  stripeCustomerId  String?             @unique
+  stripeAccountId   String?             @unique
+
+  // Statistics
+  completedTrips    Int                 @default(0)
+  completedDeliveries Int               @default(0)
+  averageRating     Float?
+  responseTime      Int?                // in minutes
+
+  // Timestamps
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+  lastLoginAt       DateTime?
+
+  // Relations
+  trips                   Trip[]
+  parcels                 Parcel[]
+  sentMessages            Message[]           @relation("MessageSender")
+  receivedMessages        Message[]           @relation("MessageReceiver")
+  sentReviews             Review[]            @relation("ReviewAuthor")
+  receivedReviews         Review[]            @relation("ReviewRecipient")
+  verifications           Verification[]
+  payments                Payment[]
+  disputes                Dispute[]
+  notifications           Notification[]
+  trustScoreHistory       TrustScoreHistory[]
+  matchRequestsRequested  MatchRequest[]      @relation("MatchRequestRequester")
+  matchRequestsToApprove  MatchRequest[]      @relation("MatchRequestApprover")
+
+  @@index([email])
+  @@index([phone])
+  @@index([trustScore])
+  @@map("users")
+}
+
+model Verification {
+  id              String             @id @default(uuid())
+  userId          String
+  type            String             // ID_DOCUMENT, SELFIE, PHONE, EMAIL, BACKGROUND_CHECK
+  status          VerificationStatus @default(PENDING)
+  provider        String?            // ONFIDO, JUMIO, etc.
+  externalId      String?
+  documentUrl     String?
+  verifiedAt      DateTime?
+  rejectionReason String?
+  metadata        Json?
+
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+
+  user            User               @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@index([status])
+  @@map("verifications")
+}
+
+model Trip {
+  id              String       @id @default(uuid())
+  userId          String
+
+  // Route
+  originAddress   String
+  originLat       Float
+  originLng       Float
+  originPlaceId   String?
+
+  destAddress     String
+  destLat         Float
+  destLng         Float
+  destPlaceId     String?
+
+  // Timing
+  departureTime   DateTime
+  arrivalTime     DateTime?
+  flexibility     Int          @default(0) // hours of flexibility
+
+  // Capacity
+  maxParcels      Int          @default(1)
+  maxWeight       Float        @default(5.0) // kg
+  acceptedSizes   String[]     // Array of ParcelSize enum values
+
+  // Pricing
+  basePricePerKg  Float
+  pricePerKm      Float?
+
+  // Status
+  status          TripStatus   @default(DRAFT)
+
+  // Metadata
+  description     String?
+  transportMode   String?      // CAR, TRAIN, BUS, FLIGHT
+
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+  publishedAt     DateTime?
+  completedAt     DateTime?
+
+  // Relations
+  user            User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parcels         Parcel[]
+  matchRequests   MatchRequest[]
+
+  @@index([userId])
+  @@index([status])
+  @@index([departureTime])
+  @@index([originLat, originLng])
+  @@index([destLat, destLng])
+  @@map("trips")
+}
+
+model Parcel {
+  id                String         @id @default(uuid())
+  senderId          String
+  recipientName     String
+  recipientPhone    String
+  recipientEmail    String?
+
+  // Pickup
+  pickupAddress     String
+  pickupLat         Float
+  pickupLng         Float
+  pickupPlaceId     String?
+  pickupNotes       String?
+
+  // Delivery
+  deliveryAddress   String
+  deliveryLat       Float
+  deliveryLng       Float
+  deliveryPlaceId   String?
+  deliveryNotes     String?
+
+  // Parcel Details
+  title             String
+  description       String
+  size              ParcelSize
+  weight            Float          // kg
+  declaredValue     Float          // USD
+  photos            String[]       // Array of S3 URLs
+
+  // Timing
+  pickupTimeStart   DateTime
+  pickupTimeEnd     DateTime
+  deliveryTimeStart DateTime?
+  deliveryTimeEnd   DateTime?
+  urgency           String         @default("STANDARD") // FLEXIBLE, STANDARD, URGENT
+
+  // Matching
+  tripId            String?
+  matchScore        Float?
+
+  // Status
+  status            ParcelStatus   @default(DRAFT)
+
+  // Verification
+  pickupPhotoUrl    String?
+  pickupSignature   String?
+  pickupVerifiedAt  DateTime?
+
+  deliveryPhotoUrl  String?
+  deliverySignature String?
+  deliveredAt       DateTime?
+
+  // Pricing
+  offeredPrice      Float
+  finalPrice        Float?
+  insuranceCost     Float?
+
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  // Relations
+  sender            User           @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  trip              Trip?          @relation(fields: [tripId], references: [id])
+  payment           Payment?
+  messages          Message[]
+  reviews           Review[]
+  trackingEvents    TrackingEvent[]
+  dispute           Dispute?
+  matchRequests     MatchRequest[]
+
+  @@index([senderId])
+  @@index([tripId])
+  @@index([status])
+  @@index([pickupLat, pickupLng])
+  @@index([deliveryLat, deliveryLng])
+  @@map("parcels")
+}
+
+model Payment {
+  id                    String        @id @default(uuid())
+  parcelId              String        @unique
+  senderId              String
+  travelerId            String?
+
+  // Amounts
+  parcelFee             Float
+  platformFee           Float
+  insuranceFee          Float         @default(0)
+  processingFee         Float
+  totalAmount           Float
+
+  // Stripe
+  stripePaymentIntentId String?       @unique
+  stripeChargeId        String?
+  stripeTransferId      String?
+
+  // Status
+  status                PaymentStatus @default(PENDING)
+
+  // Release timing
+  escrowedAt            DateTime?
+  partialReleaseAt      DateTime?
+  fullyReleasedAt       DateTime?
+  refundedAt            DateTime?
+
+  // Metadata
+  refundReason          String?
+  failureReason         String?
+  metadata              Json?
+
+  createdAt             DateTime      @default(now())
+  updatedAt             DateTime      @updatedAt
+
+  // Relations
+  parcel                Parcel        @relation(fields: [parcelId], references: [id], onDelete: Cascade)
+  sender                User          @relation(fields: [senderId], references: [id])
+
+  @@index([senderId])
+  @@index([status])
+  @@index([stripePaymentIntentId])
+  @@map("payments")
+}
+
+model Message {
+  id          String    @id @default(uuid())
+  parcelId    String
+  senderId    String
+  receiverId  String
+  content     String
+  isRead      Boolean   @default(false)
+
+  createdAt   DateTime  @default(now())
+
+  parcel      Parcel    @relation(fields: [parcelId], references: [id], onDelete: Cascade)
+  sender      User      @relation("MessageSender", fields: [senderId], references: [id])
+  receiver    User      @relation("MessageReceiver", fields: [receiverId], references: [id])
+
+  @@index([parcelId])
+  @@index([senderId])
+  @@index([receiverId])
+  @@map("messages")
+}
+
+model Review {
+  id          String   @id @default(uuid())
+  parcelId    String
+  authorId    String
+  recipientId String
+
+  rating      Int      // 1-5 stars
+  comment     String?
+  tags        String[] // FAST, FRIENDLY, PROFESSIONAL, etc.
+
+  createdAt   DateTime @default(now())
+
+  parcel      Parcel   @relation(fields: [parcelId], references: [id], onDelete: Cascade)
+  author      User     @relation("ReviewAuthor", fields: [authorId], references: [id])
+  recipient   User     @relation("ReviewRecipient", fields: [recipientId], references: [id])
+
+  @@unique([parcelId, authorId])
+  @@index([recipientId])
+  @@map("reviews")
+}
+
+model TrackingEvent {
+  id          String   @id @default(uuid())
+  parcelId    String
+  eventType   String   // CREATED, MATCHED, PICKED_UP, IN_TRANSIT, DELIVERED, etc.
+  location    String?
+  latitude    Float?
+  longitude   Float?
+  description String?
+  metadata    Json?
+
+  createdAt   DateTime @default(now())
+
+  parcel      Parcel   @relation(fields: [parcelId], references: [id], onDelete: Cascade)
+
+  @@index([parcelId])
+  @@index([createdAt])
+  @@map("tracking_events")
+}
+
+model Dispute {
+  id              String        @id @default(uuid())
+  parcelId        String        @unique
+  initiatedBy     String
+  reason          String
+  description     String
+  evidence        String[]      // Array of URLs to evidence
+
+  status          DisputeStatus @default(OPEN)
+  resolution      String?
+  resolvedBy      String?       // Admin user ID
+  resolvedAt      DateTime?
+
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  parcel          Parcel        @relation(fields: [parcelId], references: [id], onDelete: Cascade)
+  initiator       User          @relation(fields: [initiatedBy], references: [id])
+
+  @@index([status])
+  @@map("disputes")
+}
+
+model Notification {
+  id          String           @id @default(uuid())
+  userId      String
+  type        NotificationType
+  title       String
+  message     String
+  data        Json?
+  isRead      Boolean          @default(false)
+
+  createdAt   DateTime         @default(now())
+
+  user        User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, isRead])
+  @@map("notifications")
+}
+
+model MatchRequest {
+  id              String             @id @default(uuid())
+  parcelId        String
+  tripId          String
+  requesterId     String             // User who initiated the request (sender or traveler)
+  approverId      String             // User who needs to approve (traveler or sender)
+  status          MatchRequestStatus @default(PENDING)
+  requestType     String             // 'SENDER_REQUEST' or 'TRAVELER_REQUEST'
+  message         String?
+
+  createdAt       DateTime           @default(now())
+  updatedAt       DateTime           @updatedAt
+  expiresAt       DateTime?
+
+  parcel          Parcel             @relation(fields: [parcelId], references: [id], onDelete: Cascade)
+  trip            Trip               @relation(fields: [tripId], references: [id], onDelete: Cascade)
+  requester       User               @relation("MatchRequestRequester", fields: [requesterId], references: [id], onDelete: Cascade)
+  approver        User               @relation("MatchRequestApprover", fields: [approverId], references: [id], onDelete: Cascade)
+
+  @@index([approverId, status])
+  @@index([parcelId, tripId])
+  @@map("match_requests")
+}
+
+model TrustScoreHistory {
+  id          String   @id @default(uuid())
+  userId      String
+  oldScore    Int
+  newScore    Int
+  reason      String
+  metadata    Json?
+
+  createdAt   DateTime @default(now())
+
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("trust_score_history")
+}
+
+model AuditLog {
+  id          String   @id @default(uuid())
+  userId      String?
+  action      String
+  entity      String
+  entityId    String?
+  changes     Json?
+  ipAddress   String?
+  userAgent   String?
+
+  createdAt   DateTime @default(now())
+
+  @@index([userId])
+  @@index([entity, entityId])
+  @@index([createdAt])
+  @@map("audit_logs")
+}

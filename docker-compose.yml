@@ -1,0 +1,174 @@
+services:
+  # PostgreSQL with PostGIS
+  postgres:
+    image: postgis/postgis:15-3.3
+    container_name: parcelmate-postgres
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: parcelmate
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - parcelmate-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis for caching and real-time data
+  redis:
+    image: redis:7-alpine
+    container_name: parcelmate-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - parcelmate-network
+    command: redis-server --appendonly yes
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Kafka for event streaming
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.5.0
+    container_name: parcelmate-zookeeper
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - parcelmate-network
+
+  kafka:
+    image: confluentinc/cp-kafka:7.5.0
+    container_name: parcelmate-kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+    networks:
+      - parcelmate-network
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: parcelmate-backend
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      kafka:
+        condition: service_started
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/parcelmate?schema=public
+      REDIS_URL: redis://redis:6379
+      KAFKA_BROKERS: kafka:9092
+      NODE_ENV: development
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    networks:
+      - parcelmate-network
+    command: npm run start:dev
+
+  # ML Services (Python FastAPI)
+  ml-service:
+    build:
+      context: ./ml-services
+      dockerfile: Dockerfile
+    container_name: parcelmate-ml
+    ports:
+      - "8000:8000"
+    environment:
+      POSTGRES_URL: postgresql://postgres:postgres@postgres:5432/parcelmate
+      REDIS_URL: redis://redis:6379
+    volumes:
+      - ./ml-services:/app
+      - ml_models:/app/models
+    networks:
+      - parcelmate-network
+    command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
+
+  # Web Dashboard (Next.js)
+  web:
+    build:
+      context: ./web
+      dockerfile: Dockerfile.dev
+    container_name: parcelmate-web
+    depends_on:
+      - backend
+    ports:
+      - "3001:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:3000/api/v1
+    volumes:
+      - ./web:/app
+      - /app/node_modules
+      - /app/.next
+    networks:
+      - parcelmate-network
+    command: npm run dev
+
+  # Admin Dashboard
+  admin:
+    build:
+      context: ./admin-dashboard
+      dockerfile: Dockerfile.dev
+    container_name: parcelmate-admin
+    depends_on:
+      - backend
+    ports:
+      - "3002:3000"
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:3000/api/v1
+    volumes:
+      - ./admin-dashboard:/app
+      - /app/node_modules
+      - /app/.next
+    networks:
+      - parcelmate-network
+    command: npm run dev
+
+  # Nginx reverse proxy
+  nginx:
+    image: nginx:alpine
+    container_name: parcelmate-nginx
+    depends_on:
+      - backend
+      - web
+    ports:
+      - "80:80"
+      - "443:443"
+    # volumes:
+    #   - ./infrastructure/nginx/nginx.conf:/etc/nginx/nginx.conf
+    #   - ./infrastructure/nginx/ssl:/etc/nginx/ssl
+    networks:
+      - parcelmate-network
+
+networks:
+  parcelmate-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+  redis_data:
+  ml_models:

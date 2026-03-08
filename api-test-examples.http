@@ -1,0 +1,296 @@
+### ParcelMate API Test Examples
+### Use with REST Client extension in VS Code or any HTTP client
+
+@baseUrl = http://localhost:3000/api/v1
+@token = YOUR_ACCESS_TOKEN_HERE
+
+### Health Check
+GET {{baseUrl}}/health
+
+### ============================================
+### AUTHENTICATION
+### ============================================
+
+### Register New User
+POST {{baseUrl}}/auth/register
+Content-Type: application/json
+
+{
+  "email": "newuser@example.com",
+  "password": "SecurePass123!",
+  "firstName": "John",
+  "lastName": "Doe",
+  "phone": "+1234567890"
+}
+
+### Login (Traveler)
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "traveler1@demo.com",
+  "password": "Demo123!"
+}
+
+### Login (Sender)
+POST {{baseUrl}}/auth/login
+Content-Type: application/json
+
+{
+  "email": "sender1@demo.com",
+  "password": "Demo123!"
+}
+
+### Get Current User
+GET {{baseUrl}}/auth/me
+Authorization: Bearer {{token}}
+
+### ============================================
+### USERS
+### ============================================
+
+### Get My Profile
+GET {{baseUrl}}/users/profile
+Authorization: Bearer {{token}}
+
+### Update Profile
+PUT {{baseUrl}}/users/profile
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "firstName": "Jane",
+  "phone": "+1987654321"
+}
+
+### Get User Statistics
+GET {{baseUrl}}/users/statistics
+Authorization: Bearer {{token}}
+
+### Search Users
+GET {{baseUrl}}/users/search?q=sarah
+Authorization: Bearer {{token}}
+
+### ============================================
+### TRIPS
+### ============================================
+
+### Create Trip
+POST {{baseUrl}}/trips
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "originAddress": "New York, NY, USA",
+  "originLat": 40.7128,
+  "originLng": -74.0060,
+  "destAddress": "Boston, MA, USA",
+  "destLat": 42.3601,
+  "destLng": -71.0589,
+  "departureTime": "2024-12-25T10:00:00Z",
+  "maxParcels": 3,
+  "maxWeight": 10,
+  "acceptedSizes": ["DOCUMENT", "SMALL", "MEDIUM"],
+  "basePricePerKg": 12,
+  "pricePerKm": 0.5,
+  "description": "Driving to Boston",
+  "transportMode": "CAR"
+}
+
+### Get My Trips
+GET {{baseUrl}}/trips?page=1&limit=10
+Authorization: Bearer {{token}}
+
+### Search Trips
+POST {{baseUrl}}/trips/search
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "originLat": 40.7128,
+  "originLng": -74.0060,
+  "destLat": 42.3601,
+  "destLng": -71.0589,
+  "radiusKm": 50,
+  "minTrustScore": 70
+}
+
+### Get Trip by ID
+GET {{baseUrl}}/trips/TRIP_ID_HERE
+Authorization: Bearer {{token}}
+
+### Publish Trip
+POST {{baseUrl}}/trips/TRIP_ID_HERE/publish
+Authorization: Bearer {{token}}
+
+### Cancel Trip
+POST {{baseUrl}}/trips/TRIP_ID_HERE/cancel
+Authorization: Bearer {{token}}
+
+### ============================================
+### PARCELS
+### ============================================
+
+### Create Parcel
+POST {{baseUrl}}/parcels
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "recipientName": "Jane Smith",
+  "recipientPhone": "+16175554444",
+  "recipientEmail": "jane@example.com",
+  "pickupAddress": "Manhattan, New York, NY",
+  "pickupLat": 40.7589,
+  "pickupLng": -73.9851,
+  "deliveryAddress": "Back Bay, Boston, MA",
+  "deliveryLat": 42.3505,
+  "deliveryLng": -71.0765,
+  "title": "Important Documents",
+  "description": "Legal documents",
+  "size": "DOCUMENT",
+  "weight": 0.5,
+  "declaredValue": 100,
+  "pickupTimeStart": "2024-12-25T10:00:00Z",
+  "pickupTimeEnd": "2024-12-25T16:00:00Z",
+  "urgency": "URGENT",
+  "offeredPrice": 30.00
+}
+
+### Get My Parcels
+GET {{baseUrl}}/parcels?page=1&limit=10
+Authorization: Bearer {{token}}
+
+### Search Parcels
+POST {{baseUrl}}/parcels/search
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "maxWeight": 10,
+  "size": "SMALL"
+}
+
+### Get Parcel by ID
+GET {{baseUrl}}/parcels/PARCEL_ID_HERE
+Authorization: Bearer {{token}}
+
+### Publish Parcel
+POST {{baseUrl}}/parcels/PARCEL_ID_HERE/publish
+Authorization: Bearer {{token}}
+
+### Cancel Parcel
+POST {{baseUrl}}/parcels/PARCEL_ID_HERE/cancel
+Authorization: Bearer {{token}}
+
+### ============================================
+### MATCHING
+### ============================================
+
+### Find Matches for Parcel
+GET {{baseUrl}}/matching/parcel/PARCEL_ID_HERE
+Authorization: Bearer {{token}}
+
+### Find Matches for Trip
+GET {{baseUrl}}/matching/trip/TRIP_ID_HERE
+Authorization: Bearer {{token}}
+
+### Accept Match
+POST {{baseUrl}}/matching/accept/PARCEL_ID/TRIP_ID
+Authorization: Bearer {{token}}
+
+### ============================================
+### MESSAGES
+### ============================================
+
+### Send Message
+POST {{baseUrl}}/messages
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "receiverId": "RECEIVER_USER_ID",
+  "parcelId": "PARCEL_ID",
+  "content": "Hi! When can you pick up the parcel?"
+}
+
+### Get Conversation
+GET {{baseUrl}}/messages/parcel/PARCEL_ID_HERE
+Authorization: Bearer {{token}}
+
+### ============================================
+### REVIEWS
+### ============================================
+
+### Create Review
+POST {{baseUrl}}/reviews
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "parcelId": "PARCEL_ID",
+  "recipientId": "USER_ID",
+  "rating": 5,
+  "comment": "Excellent service!",
+  "tags": ["FAST", "PROFESSIONAL", "FRIENDLY"]
+}
+
+### ============================================
+### NOTIFICATIONS
+### ============================================
+
+### Get My Notifications
+GET {{baseUrl}}/notifications?page=1&limit=20
+Authorization: Bearer {{token}}
+
+### Mark Notification as Read
+PUT {{baseUrl}}/notifications/NOTIFICATION_ID/read
+Authorization: Bearer {{token}}
+
+### Mark All as Read
+PUT {{baseUrl}}/notifications/read-all
+Authorization: Bearer {{token}}
+
+### ============================================
+### TRACKING
+### ============================================
+
+### Get Parcel Tracking
+GET {{baseUrl}}/tracking/parcel/PARCEL_ID_HERE
+Authorization: Bearer {{token}}
+
+### Update Location
+POST {{baseUrl}}/tracking/location
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "parcelId": "PARCEL_ID",
+  "latitude": 41.5,
+  "longitude": -72.5
+}
+
+### ============================================
+### ADMIN
+### ============================================
+
+### Get Dashboard Stats
+GET {{baseUrl}}/admin/stats
+Authorization: Bearer {{token}}
+
+### Get All Users
+GET {{baseUrl}}/admin/users?page=1&limit=50
+Authorization: Bearer {{token}}
+
+### Suspend User
+PUT {{baseUrl}}/admin/users/USER_ID/suspend
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "reason": "Violation of terms"
+}
+
+### Activate User
+PUT {{baseUrl}}/admin/users/USER_ID/activate
+Authorization: Bearer {{token}}
