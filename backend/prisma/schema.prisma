@@ -290,6 +290,9 @@ model Parcel {
 
   deliveryPhotoUrl  String?
   deliverySignature String?
+  deliveryOtp       String?        // OTP for delivery confirmation
+  deliveryOtpExpiry DateTime?      // OTP expiry time
+  deliveryOtpVerifiedAt DateTime?  // When OTP was verified
   deliveredAt       DateTime?
 
   // Pricing
@@ -330,6 +333,11 @@ model Payment {
   insuranceFee          Float         @default(0)
   processingFee         Float
   totalAmount           Float
+
+  // Payment Method
+  paymentMethod         String?       // CARD, UPI, NET_BANKING, etc.
+  cardLast4             String?       // Last 4 digits of card
+  cardBrand             String?       // VISA, MASTERCARD, etc.
 
   // Stripe
   stripePaymentIntentId String?       @unique

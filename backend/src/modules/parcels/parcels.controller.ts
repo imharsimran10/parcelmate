@@ -19,6 +19,8 @@ import {
   ApiQuery,
 } from '@nestjs/swagger';
 import { ParcelsService } from './parcels.service';
+import { DeliveryService } from './delivery.service';
+import { PaymentService } from './payment.service';
 import { CreateParcelDto } from './dto/create-parcel.dto';
 import { UpdateParcelDto } from './dto/update-parcel.dto';
 import { SearchParcelsDto } from './dto/search-parcels.dto';
@@ -29,7 +31,11 @@ import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
 @UseGuards(JwtAuthGuard)
 @ApiBearerAuth()
 export class ParcelsController {
-  constructor(private readonly parcelsService: ParcelsService) {}
+  constructor(
+    private readonly parcelsService: ParcelsService,
+    private readonly deliveryService: DeliveryService,
+    private readonly paymentService: PaymentService,
+  ) {}
 
   @Post()
   @ApiOperation({ summary: 'Create a new parcel request' })
@@ -159,5 +165,69 @@ export class ParcelsController {
     @Body() body: { tripId: string },
   ) {
     return this.parcelsService.requestTraveler(id, body.tripId, req.user.id);
+  }
+
+  // Delivery confirmation endpoints
+  @Post(':id/mark-picked-up')
+  @ApiOperation({ summary: 'Mark parcel as picked up (traveler)' })
+  @ApiResponse({ status: 200, description: 'Parcel marked as picked up' })
+  async markAsPickedUp(@Param('id') id: string, @Request() req) {
+    return this.deliveryService.markAsPickedUp(id, req.user.id);
+  }
+
+  @Post(':id/mark-in-transit')
+  @ApiOperation({ summary: 'Mark parcel as in transit (traveler)' })
+  @ApiResponse({ status: 200, description: 'Parcel marked as in transit' })
+  async markAsInTransit(@Param('id') id: string, @Request() req) {
+    return this.deliveryService.markAsInTransit(id, req.user.id);
+  }
+
+  @Post(':id/generate-delivery-otp')
+  @ApiOperation({ summary: 'Generate delivery OTP (traveler)' })
+  @ApiResponse({ status: 200, description: 'Delivery OTP generated' })
+  async generateDeliveryOTP(@Param('id') id: string, @Request() req) {
+    return this.deliveryService.generateDeliveryOTP(id, req.user.id);
+  }
+
+  @Post(':id/verify-delivery-otp')
+  @ApiOperation({ summary: 'Verify delivery OTP and confirm delivery (traveler)' })
+  @ApiResponse({ status: 200, description: 'Delivery confirmed successfully' })
+  async verifyDeliveryOTP(
+    @Param('id') id: string,
+    @Request() req,
+    @Body() body: { otp: string },
+  ) {
+    return this.deliveryService.verifyDeliveryOTP(id, body.otp, req.user.id);
+  }
+
+  // Payment endpoints
+  @Post(':id/process-payment')
+  @ApiOperation({ summary: 'Process payment for parcel (sender)' })
+  @ApiResponse({ status: 200, description: 'Payment processed successfully' })
+  async processPayment(
+    @Param('id') id: string,
+    @Request() req,
+    @Body() body: {
+      cardNumber: string;
+      cardExpiry: string;
+      cardCvv: string;
+      cardName: string;
+    },
+  ) {
+    return this.paymentService.processDummyPayment(
+      id,
+      req.user.id,
+      body.cardNumber,
+      body.cardExpiry,
+      body.cardCvv,
+      body.cardName,
+    );
+  }
+
+  @Get(':id/payment-status')
+  @ApiOperation({ summary: 'Get payment status for parcel' })
+  @ApiResponse({ status: 200, description: 'Payment status retrieved' })
+  async getPaymentStatus(@Param('id') id: string) {
+    return this.paymentService.getPaymentStatus(id);
   }
 }
