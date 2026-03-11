@@ -1,6 +1,6 @@
-# Docker Deployment Guide for ParcelMate P2P Application
+# Docker Deployment Guide for PaarcelMate P2P Application
 
-This guide will help you dockerize and deploy the complete ParcelMate application to Docker Hub.
+This guide will help you dockerize and deploy the complete PaarcelMate application to Docker Hub.
 
 ## 📋 Prerequisites
 
@@ -65,14 +65,14 @@ P2P_App_v3/
 #### Build Backend Image
 ```bash
 cd backend
-docker build -t your_dockerhub_username/parcelmate-backend:latest .
+docker build -t your_dockerhub_username/paarcelmate-backend:latest .
 cd ..
 ```
 
 #### Build Frontend Image
 ```bash
 cd web-dashboard
-docker build -t your_dockerhub_username/parcelmate-frontend:latest .
+docker build -t your_dockerhub_username/paarcelmate-frontend:latest .
 cd ..
 ```
 
@@ -95,23 +95,23 @@ docker login
 ### Step 2: Tag Images (if not already tagged)
 ```bash
 # Tag backend
-docker tag parcelmate-backend:latest your_dockerhub_username/parcelmate-backend:latest
-docker tag parcelmate-backend:latest your_dockerhub_username/parcelmate-backend:v1.0.0
+docker tag paarcelmate-backend:latest your_dockerhub_username/paarcelmate-backend:latest
+docker tag paarcelmate-backend:latest your_dockerhub_username/paarcelmate-backend:v1.0.0
 
 # Tag frontend
-docker tag parcelmate-frontend:latest your_dockerhub_username/parcelmate-frontend:latest
-docker tag parcelmate-frontend:latest your_dockerhub_username/parcelmate-frontend:v1.0.0
+docker tag paarcelmate-frontend:latest your_dockerhub_username/paarcelmate-frontend:latest
+docker tag paarcelmate-frontend:latest your_dockerhub_username/paarcelmate-frontend:v1.0.0
 ```
 
 ### Step 3: Push Images to Docker Hub
 ```bash
 # Push backend
-docker push your_dockerhub_username/parcelmate-backend:latest
-docker push your_dockerhub_username/parcelmate-backend:v1.0.0
+docker push your_dockerhub_username/paarcelmate-backend:latest
+docker push your_dockerhub_username/paarcelmate-backend:v1.0.0
 
 # Push frontend
-docker push your_dockerhub_username/parcelmate-frontend:latest
-docker push your_dockerhub_username/parcelmate-frontend:v1.0.0
+docker push your_dockerhub_username/paarcelmate-frontend:latest
+docker push your_dockerhub_username/paarcelmate-frontend:v1.0.0
 ```
 
 ---
@@ -131,11 +131,11 @@ echo "🔧 Building Docker images..."
 
 # Build backend
 echo "📦 Building backend..."
-docker build -t $DOCKER_USERNAME/parcelmate-backend:latest -t $DOCKER_USERNAME/parcelmate-backend:$VERSION ./backend
+docker build -t $DOCKER_USERNAME/paarcelmate-backend:latest -t $DOCKER_USERNAME/paarcelmate-backend:$VERSION ./backend
 
 # Build frontend
 echo "📦 Building frontend..."
-docker build -t $DOCKER_USERNAME/parcelmate-frontend:latest -t $DOCKER_USERNAME/parcelmate-frontend:$VERSION ./web-dashboard
+docker build -t $DOCKER_USERNAME/paarcelmate-frontend:latest -t $DOCKER_USERNAME/paarcelmate-frontend:$VERSION ./web-dashboard
 
 echo "✅ Build completed!"
 
@@ -147,19 +147,19 @@ docker login
 echo "📤 Pushing images to Docker Hub..."
 
 echo "Pushing backend..."
-docker push $DOCKER_USERNAME/parcelmate-backend:latest
-docker push $DOCKER_USERNAME/parcelmate-backend:$VERSION
+docker push $DOCKER_USERNAME/paarcelmate-backend:latest
+docker push $DOCKER_USERNAME/paarcelmate-backend:$VERSION
 
 echo "Pushing frontend..."
-docker push $DOCKER_USERNAME/parcelmate-frontend:latest
-docker push $DOCKER_USERNAME/parcelmate-frontend:$VERSION
+docker push $DOCKER_USERNAME/paarcelmate-frontend:latest
+docker push $DOCKER_USERNAME/paarcelmate-frontend:$VERSION
 
 echo "✅ All images pushed successfully!"
 echo "🎉 Deployment complete!"
 echo ""
 echo "📋 Your images are now available at:"
-echo "   Backend:  https://hub.docker.com/r/$DOCKER_USERNAME/parcelmate-backend"
-echo "   Frontend: https://hub.docker.com/r/$DOCKER_USERNAME/parcelmate-frontend"
+echo "   Backend:  https://hub.docker.com/r/$DOCKER_USERNAME/paarcelmate-backend"
+echo "   Frontend: https://hub.docker.com/r/$DOCKER_USERNAME/paarcelmate-frontend"
 ```
 
 Make it executable and run:
@@ -239,8 +239,8 @@ curl http://localhost:3001
 ### 1. Create Repositories on Docker Hub
 
 Visit https://hub.docker.com and create two repositories:
-- `parcelmate-backend`
-- `parcelmate-frontend`
+- `paarcelmate-backend`
+- `paarcelmate-frontend`
 
 ### 2. Make Repositories Public (Optional)
 - Go to repository settings
@@ -251,13 +251,13 @@ Add descriptions to help others understand your images:
 
 **Backend Repository Description:**
 ```
-ParcelMate P2P Delivery Platform - Backend API
+PaarcelMate P2P Delivery Platform - Backend API
 NestJS + PostgreSQL + Redis + Prisma
 ```
 
 **Frontend Repository Description:**
 ```
-ParcelMate P2P Delivery Platform - Web Dashboard
+PaarcelMate P2P Delivery Platform - Web Dashboard
 Next.js 14 + TypeScript + Tailwind CSS
 ```
 
@@ -282,7 +282,7 @@ Next.js 14 + TypeScript + Tailwind CSS
 docker builder prune -a
 
 # Rebuild without cache
-docker build --no-cache -t your_username/parcelmate-backend:latest ./backend
+docker build --no-cache -t your_username/paarcelmate-backend:latest ./backend
 ```
 
 ### Push Fails with Authentication Error
@@ -295,11 +295,11 @@ docker login
 ### Container Won't Start
 ```bash
 # Check logs
-docker logs parcelmate-backend
-docker logs parcelmate-web-dashboard
+docker logs paarcelmate-backend
+docker logs paarcelmate-web-dashboard
 
 # Check health status
-docker inspect parcelmate-backend | grep -A 5 Health
+docker inspect paarcelmate-backend | grep -A 5 Health
 ```
 
 ### Database Connection Issues
@@ -308,7 +308,7 @@ docker inspect parcelmate-backend | grep -A 5 Health
 docker ps | grep postgres
 
 # Check network
-docker network inspect parcelmate-network
+docker network inspect paarcelmate-network
 ```
 
 ---

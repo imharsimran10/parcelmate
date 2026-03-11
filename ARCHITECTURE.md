@@ -1,4 +1,4 @@
-# ParcelMate - System Architecture
+# PaarcelMate - System Architecture
 
 ## System Overview
 

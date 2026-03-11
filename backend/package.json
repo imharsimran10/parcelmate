@@ -1,8 +1,8 @@
 {
-  "name": "parcelmate-backend",
+  "name": "paarcelmate-backend",
   "version": "1.0.0",
-  "description": "ParcelMate Backend API",
-  "author": "ParcelMate Team",
+  "description": "PaarcelMate Backend API",
+  "author": "PaarcelMate Team",
   "private": true,
   "license": "PROPRIETARY",
   "scripts": {

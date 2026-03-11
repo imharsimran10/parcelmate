@@ -1,4 +1,4 @@
-# 📚 ParcelMate - Documentation Index
+# 📚 PaarcelMate - Documentation Index
 
 ## 🚀 Getting Started
 

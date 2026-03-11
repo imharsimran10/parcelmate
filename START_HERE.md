@@ -1,4 +1,4 @@
-# 🚀 START HERE - ParcelMate Demo
+# 🚀 START HERE - PaarcelMate Demo
 
 ## Your Complete P2P Parcel Delivery Platform is Ready!
 
@@ -38,7 +38,7 @@ npm run start:dev
 
 You'll see:
 ```
-🚀 ParcelMate API is running!
+🚀 PaarcelMate API is running!
 📡 URL: http://localhost:3000
 📚 Docs: http://localhost:3000/api/docs
 ```

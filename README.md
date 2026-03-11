@@ -1,10 +1,10 @@
-# ParcelMate - P2P Parcel Delivery Platform
+# PaarcelMate - P2P Parcel Delivery Platform
 
 A production-ready peer-to-peer parcel delivery platform connecting travelers with senders for fast, affordable package delivery.
 
 ## Overview
 
-ParcelMate allows travelers to monetize their journeys by delivering parcels along their route, while senders get cheaper and faster delivery compared to traditional couriers.
+PaarcelMate allows travelers to monetize their journeys by delivering parcels along their route, while senders get cheaper and faster delivery compared to traditional couriers.
 
 ### Key Features
 
@@ -50,7 +50,7 @@ ParcelMate allows travelers to monetize their journeys by delivering parcels alo
 ## Project Structure
 
 ```
-parcelmate/
+paarcelmate/
 ├── backend/                    # NestJS API server
 │   ├── src/
 │   │   ├── modules/
@@ -112,8 +112,8 @@ parcelmate/
 
 1. **Clone the repository**
 ```bash
-git clone https://github.com/yourorg/parcelmate.git
-cd parcelmate
+git clone https://github.com/yourorg/paarcelmate.git
+cd paarcelmate
 ```
 
 2. **Set up environment variables**
@@ -285,9 +285,9 @@ Proprietary - All rights reserved
 
 ## Support
 
-- Email: support@parcelmate.com
-- Documentation: https://docs.parcelmate.com
-- Status Page: https://status.parcelmate.com
+- Email: support@paarcelmate.com
+- Documentation: https://docs.paarcelmate.com
+- Status Page: https://status.paarcelmate.com
 
 ## Team
 
@@ -297,4 +297,4 @@ Proprietary - All rights reserved
 
 ---
 
-Built with ❤️ by the ParcelMate team
+Built with ❤️ by the PaarcelMate team

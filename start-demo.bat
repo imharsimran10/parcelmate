@@ -1,5 +1,5 @@
 @echo off
-echo Starting ParcelMate Demo...
+echo Starting PaarcelMate Demo...
 echo.
 
 REM Check if Docker Desktop is running
@@ -48,7 +48,7 @@ echo.
 echo Starting API server...
 echo.
 echo ================================================
-echo ParcelMate is ready!
+echo PaarcelMate is ready!
 echo ================================================
 echo.
 echo API:  http://localhost:3000

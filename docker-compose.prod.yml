@@ -4,18 +4,18 @@ services:
   # PostgreSQL with PostGIS
   postgres:
     image: postgis/postgis:15-3.3
-    container_name: parcelmate-postgres
+    container_name: paarcelmate-postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      POSTGRES_DB: ${POSTGRES_DB:-parcelmate}
+      POSTGRES_DB: ${POSTGRES_DB:-paarcelmate}
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
-      - parcelmate-network
+      - paarcelmate-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -25,14 +25,14 @@ services:
   # Redis for caching and real-time data
   redis:
     image: redis:7-alpine
-    container_name: parcelmate-redis
+    container_name: paarcelmate-redis
     restart: unless-stopped
     ports:
       - "6379:6379"
     volumes:
       - redis_data:/data
     networks:
-      - parcelmate-network
+      - paarcelmate-network
     command: redis-server --appendonly yes
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
@@ -45,8 +45,8 @@ services:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    image: ${DOCKER_USERNAME:-yourusername}/parcelmate-backend:latest
-    container_name: parcelmate-backend
+    image: ${DOCKER_USERNAME:-yourusername}/paarcelmate-backend:latest
+    container_name: paarcelmate-backend
     restart: unless-stopped
     depends_on:
       postgres:
@@ -57,15 +57,15 @@ services:
       - "3000:3000"
     environment:
       NODE_ENV: production
-      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-parcelmate}?schema=public
+      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-postgres}@postgres:5432/${POSTGRES_DB:-paarcelmate}?schema=public
       REDIS_URL: redis://redis:6379
       JWT_SECRET: ${JWT_SECRET:-your-super-secret-jwt-key-change-this-in-production}
       JWT_REFRESH_SECRET: ${JWT_REFRESH_SECRET:-your-super-secret-refresh-key-change-this-in-production}
       SENDGRID_API_KEY: ${SENDGRID_API_KEY}
       SENDGRID_FROM_EMAIL: ${SENDGRID_FROM_EMAIL}
-      SENDGRID_FROM_NAME: ${SENDGRID_FROM_NAME:-ParcelMate}
+      SENDGRID_FROM_NAME: ${SENDGRID_FROM_NAME:-PaarcelMate}
     networks:
-      - parcelmate-network
+      - paarcelmate-network
     healthcheck:
       test: ["CMD", "node", "-e", "require('http').get('http://localhost:3000/api/v1/health')"]
       interval: 30s
@@ -77,8 +77,8 @@ services:
     build:
       context: ./web-dashboard
       dockerfile: Dockerfile
-    image: ${DOCKER_USERNAME:-yourusername}/parcelmate-frontend:latest
-    container_name: parcelmate-web-dashboard
+    image: ${DOCKER_USERNAME:-yourusername}/paarcelmate-frontend:latest
+    container_name: paarcelmate-web-dashboard
     restart: unless-stopped
     depends_on:
       - backend
@@ -88,7 +88,7 @@ services:
       NODE_ENV: production
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://localhost:3000/api/v1}
     networks:
-      - parcelmate-network
+      - paarcelmate-network
     healthcheck:
       test: ["CMD", "node", "-e", "require('http').get('http://localhost:3001')"]
       interval: 30s
@@ -96,7 +96,7 @@ services:
       retries: 3
 
 networks:
-  parcelmate-network:
+  paarcelmate-network:
     driver: bridge
 
 volumes:

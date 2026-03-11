@@ -119,7 +119,7 @@ export default function LocationPickerLeaflet({
         `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}&addressdetails=1`,
         {
           headers: {
-            'User-Agent': 'ParcelMate-Demo-App',
+            'User-Agent': 'PaarcelMate-Demo-App',
           },
         }
       );
@@ -166,7 +166,7 @@ export default function LocationPickerLeaflet({
         )}&addressdetails=1&limit=1`,
         {
           headers: {
-            'User-Agent': 'ParcelMate-Demo-App',
+            'User-Agent': 'PaarcelMate-Demo-App',
           },
         }
       );

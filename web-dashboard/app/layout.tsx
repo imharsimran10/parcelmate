@@ -19,8 +19,8 @@ const spaceGrotesk = Space_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: "P2P Delivery - Smart Peer-to-Peer Package Delivery",
-  description: "Connect travelers with senders for efficient, affordable, and secure peer-to-peer deliveries worldwide.",
+  title: "PaarcelMate - Smart Peer-to-Peer Package Delivery",
+  description: "PaarcelMate connects travelers with senders for efficient, affordable, and secure peer-to-peer deliveries worldwide.",
 };
 
 export default function RootLayout({

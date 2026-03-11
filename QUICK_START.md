@@ -1,6 +1,6 @@
-# Quick Start Guide - ParcelMate
+# Quick Start Guide - PaarcelMate
 
-This guide will help you get the ParcelMate application running locally in under 10 minutes.
+This guide will help you get the PaarcelMate application running locally in under 10 minutes.
 
 ## Prerequisites
 
@@ -65,7 +65,7 @@ npm run start:dev
 
 You should see:
 ```
-🚀 ParcelMate API is running!
+🚀 PaarcelMate API is running!
 📡 URL: http://localhost:3000
 📚 Docs: http://localhost:3000/api/docs
 🌍 Environment: development

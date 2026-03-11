@@ -2,17 +2,17 @@ services:
   # PostgreSQL with PostGIS
   postgres:
     image: postgis/postgis:15-3.3
-    container_name: parcelmate-postgres
+    container_name: paarcelmate-postgres
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: parcelmate
+      POSTGRES_DB: paarcelmate
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
     networks:
-      - parcelmate-network
+      - paarcelmate-network
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U postgres"]
       interval: 10s
@@ -22,13 +22,13 @@ services:
   # Redis for caching and real-time data
   redis:
     image: redis:7-alpine
-    container_name: parcelmate-redis
+    container_name: paarcelmate-redis
     ports:
       - "6379:6379"
     volumes:
       - redis_data:/data
     networks:
-      - parcelmate-network
+      - paarcelmate-network
     command: redis-server --appendonly yes
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
@@ -39,16 +39,16 @@ services:
   # Kafka for event streaming
   zookeeper:
     image: confluentinc/cp-zookeeper:7.5.0
-    container_name: parcelmate-zookeeper
+    container_name: paarcelmate-zookeeper
     environment:
       ZOOKEEPER_CLIENT_PORT: 2181
       ZOOKEEPER_TICK_TIME: 2000
     networks:
-      - parcelmate-network
+      - paarcelmate-network
 
   kafka:
     image: confluentinc/cp-kafka:7.5.0
-    container_name: parcelmate-kafka
+    container_name: paarcelmate-kafka
     depends_on:
       - zookeeper
     ports:
@@ -61,14 +61,14 @@ services:
       KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
       KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
     networks:
-      - parcelmate-network
+      - paarcelmate-network
 
   # Backend API
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
-    container_name: parcelmate-backend
+    container_name: paarcelmate-backend
     depends_on:
       postgres:
         condition: service_healthy
@@ -79,7 +79,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/parcelmate?schema=public
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/paarcelmate?schema=public
       REDIS_URL: redis://redis:6379
       KAFKA_BROKERS: kafka:9092
       NODE_ENV: development
@@ -87,7 +87,7 @@ services:
       - ./backend:/app
       - /app/node_modules
     networks:
-      - parcelmate-network
+      - paarcelmate-network
     command: npm run start:dev
 
   # ML Services (Python FastAPI)
@@ -95,17 +95,17 @@ services:
     build:
       context: ./ml-services
       dockerfile: Dockerfile
-    container_name: parcelmate-ml
+    container_name: paarcelmate-ml
     ports:
       - "8000:8000"
     environment:
-      POSTGRES_URL: postgresql://postgres:postgres@postgres:5432/parcelmate
+      POSTGRES_URL: postgresql://postgres:postgres@postgres:5432/paarcelmate
       REDIS_URL: redis://redis:6379
     volumes:
       - ./ml-services:/app
       - ml_models:/app/models
     networks:
-      - parcelmate-network
+      - paarcelmate-network
     command: uvicorn main:app --host 0.0.0.0 --port 8000 --reload
 
   # Web Dashboard (Next.js)
@@ -113,7 +113,7 @@ services:
     build:
       context: ./web
       dockerfile: Dockerfile.dev
-    container_name: parcelmate-web
+    container_name: paarcelmate-web
     depends_on:
       - backend
     ports:
@@ -125,7 +125,7 @@ services:
       - /app/node_modules
       - /app/.next
     networks:
-      - parcelmate-network
+      - paarcelmate-network
     command: npm run dev
 
   # Admin Dashboard
@@ -133,7 +133,7 @@ services:
     build:
       context: ./admin-dashboard
       dockerfile: Dockerfile.dev
-    container_name: parcelmate-admin
+    container_name: paarcelmate-admin
     depends_on:
       - backend
     ports:
@@ -145,13 +145,13 @@ services:
       - /app/node_modules
       - /app/.next
     networks:
-      - parcelmate-network
+      - paarcelmate-network
     command: npm run dev
 
   # Nginx reverse proxy
   nginx:
     image: nginx:alpine
-    container_name: parcelmate-nginx
+    container_name: paarcelmate-nginx
     depends_on:
       - backend
       - web
@@ -162,10 +162,10 @@ services:
     #   - ./infrastructure/nginx/nginx.conf:/etc/nginx/nginx.conf
     #   - ./infrastructure/nginx/ssl:/etc/nginx/ssl
     networks:
-      - parcelmate-network
+      - paarcelmate-network
 
 networks:
-  parcelmate-network:
+  paarcelmate-network:
     driver: bridge
 
 volumes:

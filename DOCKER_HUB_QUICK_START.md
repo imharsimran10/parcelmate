@@ -40,28 +40,28 @@ If you prefer manual control:
 ### 3.1 Build Images
 ```bash
 # Backend
-docker build -t yourusername/parcelmate-backend:latest ./backend
+docker build -t yourusername/paarcelmate-backend:latest ./backend
 
 # Frontend
-docker build -t yourusername/parcelmate-frontend:latest ./web-dashboard
+docker build -t yourusername/paarcelmate-frontend:latest ./web-dashboard
 ```
 
 ### 3.2 Tag Images
 ```bash
 # Tag with version
-docker tag yourusername/parcelmate-backend:latest yourusername/parcelmate-backend:v1.0.0
-docker tag yourusername/parcelmate-frontend:latest yourusername/parcelmate-frontend:v1.0.0
+docker tag yourusername/paarcelmate-backend:latest yourusername/paarcelmate-backend:v1.0.0
+docker tag yourusername/paarcelmate-frontend:latest yourusername/paarcelmate-frontend:v1.0.0
 ```
 
 ### 3.3 Push to Docker Hub
 ```bash
 # Push backend
-docker push yourusername/parcelmate-backend:latest
-docker push yourusername/parcelmate-backend:v1.0.0
+docker push yourusername/paarcelmate-backend:latest
+docker push yourusername/paarcelmate-backend:v1.0.0
 
 # Push frontend
-docker push yourusername/parcelmate-frontend:latest
-docker push yourusername/parcelmate-frontend:v1.0.0
+docker push yourusername/paarcelmate-frontend:latest
+docker push yourusername/paarcelmate-frontend:v1.0.0
 ```
 
 ---
@@ -69,8 +69,8 @@ docker push yourusername/parcelmate-frontend:v1.0.0
 ## Step 4: Verify Upload
 
 Visit your Docker Hub repositories:
-- Backend: `https://hub.docker.com/r/yourusername/parcelmate-backend`
-- Frontend: `https://hub.docker.com/r/yourusername/parcelmate-frontend`
+- Backend: `https://hub.docker.com/r/yourusername/paarcelmate-backend`
+- Frontend: `https://hub.docker.com/r/yourusername/paarcelmate-frontend`
 
 You should see your images with tags:
 - ✅ `latest`
@@ -106,7 +106,7 @@ Typical image sizes:
 - [ ] Backend image pushed to Docker Hub
 - [ ] Frontend image pushed to Docker Hub
 - [ ] Images visible on Docker Hub website
-- [ ] Images can be pulled: `docker pull yourusername/parcelmate-backend:latest`
+- [ ] Images can be pulled: `docker pull yourusername/paarcelmate-backend:latest`
 
 ---
 
@@ -127,7 +127,7 @@ docker login
 ```bash
 # Clean and rebuild
 docker builder prune -a
-docker build --no-cache -t yourusername/parcelmate-backend:latest ./backend
+docker build --no-cache -t yourusername/paarcelmate-backend:latest ./backend
 ```
 
 ### "no space left on device"
@@ -145,14 +145,14 @@ After uploading to Docker Hub:
 
 1. **Deploy to Production Server**
    ```bash
-   docker pull yourusername/parcelmate-backend:latest
-   docker pull yourusername/parcelmate-frontend:latest
+   docker pull yourusername/paarcelmate-backend:latest
+   docker pull yourusername/paarcelmate-frontend:latest
    docker-compose -f docker-compose.prod.yml up -d
    ```
 
 2. **Share with Team**
    - Send them the Docker Hub URL
-   - They can pull with: `docker pull yourusername/parcelmate-backend:latest`
+   - They can pull with: `docker pull yourusername/paarcelmate-backend:latest`
 
 3. **Set up CI/CD**
    - Automate builds on code push

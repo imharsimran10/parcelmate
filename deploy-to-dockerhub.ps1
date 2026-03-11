@@ -1,4 +1,4 @@
-# PowerShell Script to Deploy ParcelMate to Docker Hub
+# PowerShell Script to Deploy PaarcelMate to Docker Hub
 # Usage: .\deploy-to-dockerhub.ps1
 
 # Configuration
@@ -10,7 +10,7 @@ Write-Host ""
 
 # Build backend
 Write-Host "📦 Building backend..." -ForegroundColor Yellow
-docker build -t "${DOCKER_USERNAME}/parcelmate-backend:latest" -t "${DOCKER_USERNAME}/parcelmate-backend:${VERSION}" ./backend
+docker build -t "${DOCKER_USERNAME}/paarcelmate-backend:latest" -t "${DOCKER_USERNAME}/paarcelmate-backend:${VERSION}" ./backend
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host "❌ Backend build failed!" -ForegroundColor Red
@@ -22,7 +22,7 @@ Write-Host ""
 
 # Build frontend
 Write-Host "📦 Building frontend..." -ForegroundColor Yellow
-docker build -t "${DOCKER_USERNAME}/parcelmate-frontend:latest" -t "${DOCKER_USERNAME}/parcelmate-frontend:${VERSION}" ./web-dashboard
+docker build -t "${DOCKER_USERNAME}/paarcelmate-frontend:latest" -t "${DOCKER_USERNAME}/paarcelmate-frontend:${VERSION}" ./web-dashboard
 
 if ($LASTEXITCODE -ne 0) {
     Write-Host "❌ Frontend build failed!" -ForegroundColor Red
@@ -48,25 +48,25 @@ Write-Host "📤 Pushing images to Docker Hub..." -ForegroundColor Cyan
 Write-Host ""
 
 Write-Host "Pushing backend:latest..." -ForegroundColor Yellow
-docker push "${DOCKER_USERNAME}/parcelmate-backend:latest"
+docker push "${DOCKER_USERNAME}/paarcelmate-backend:latest"
 
 Write-Host "Pushing backend:${VERSION}..." -ForegroundColor Yellow
-docker push "${DOCKER_USERNAME}/parcelmate-backend:${VERSION}"
+docker push "${DOCKER_USERNAME}/paarcelmate-backend:${VERSION}"
 
 Write-Host "Pushing frontend:latest..." -ForegroundColor Yellow
-docker push "${DOCKER_USERNAME}/parcelmate-frontend:latest"
+docker push "${DOCKER_USERNAME}/paarcelmate-frontend:latest"
 
 Write-Host "Pushing frontend:${VERSION}..." -ForegroundColor Yellow
-docker push "${DOCKER_USERNAME}/parcelmate-frontend:${VERSION}"
+docker push "${DOCKER_USERNAME}/paarcelmate-frontend:${VERSION}"
 
 Write-Host ""
 Write-Host "✅ All images pushed successfully!" -ForegroundColor Green
 Write-Host "🎉 Deployment complete!" -ForegroundColor Magenta
 Write-Host ""
 Write-Host "📋 Your images are now available at:" -ForegroundColor Cyan
-Write-Host "   Backend:  https://hub.docker.com/r/${DOCKER_USERNAME}/parcelmate-backend" -ForegroundColor White
-Write-Host "   Frontend: https://hub.docker.com/r/${DOCKER_USERNAME}/parcelmate-frontend" -ForegroundColor White
+Write-Host "   Backend:  https://hub.docker.com/r/${DOCKER_USERNAME}/paarcelmate-backend" -ForegroundColor White
+Write-Host "   Frontend: https://hub.docker.com/r/${DOCKER_USERNAME}/paarcelmate-frontend" -ForegroundColor White
 Write-Host ""
 Write-Host "🚀 To pull and run your images:" -ForegroundColor Cyan
-Write-Host "   docker pull ${DOCKER_USERNAME}/parcelmate-backend:${VERSION}" -ForegroundColor Gray
-Write-Host "   docker pull ${DOCKER_USERNAME}/parcelmate-frontend:${VERSION}" -ForegroundColor Gray
+Write-Host "   docker pull ${DOCKER_USERNAME}/paarcelmate-backend:${VERSION}" -ForegroundColor Gray
+Write-Host "   docker pull ${DOCKER_USERNAME}/paarcelmate-frontend:${VERSION}" -ForegroundColor Gray

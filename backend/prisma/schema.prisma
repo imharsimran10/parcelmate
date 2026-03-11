@@ -1,4 +1,4 @@
-// Prisma Schema for ParcelMate
+// Prisma Schema for PaarcelMate
 
 generator client {
   provider        = "prisma-client-js"

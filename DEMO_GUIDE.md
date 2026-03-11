@@ -1,8 +1,8 @@
-# ParcelMate - Complete Demo Guide
+# PaarcelMate - Complete Demo Guide
 
 ## 🎯 Quick Demo Setup (5 Minutes)
 
-This guide will help you run a complete demo of the ParcelMate P2P parcel delivery platform.
+This guide will help you run a complete demo of the PaarcelMate P2P parcel delivery platform.
 
 ---
 
@@ -55,7 +55,7 @@ npm run start:dev
 
 You should see:
 ```
-🚀 ParcelMate API is running!
+🚀 PaarcelMate API is running!
 📡 URL: http://localhost:3000
 📚 Docs: http://localhost:3000/api/docs
 🌍 Environment: development

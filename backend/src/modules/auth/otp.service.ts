@@ -83,8 +83,8 @@ export class OtpService {
 
     // Production mode or development with SendGrid configured - attempt to send email
     try {
-      const fromEmail = this.config.get<string>('SENDGRID_FROM_EMAIL') || 'noreply@parcelmate.com';
-      const fromName = this.config.get<string>('SENDGRID_FROM_NAME') || 'ParcelMate';
+      const fromEmail = this.config.get<string>('SENDGRID_FROM_EMAIL') || 'noreply@paarcelmate.com';
+      const fromName = this.config.get<string>('SENDGRID_FROM_NAME') || 'PaarcelMate';
 
       const msg = {
         to: email,
@@ -92,7 +92,7 @@ export class OtpService {
           email: fromEmail,
           name: fromName,
         },
-        subject: 'ParcelMate - Verify Your Email',
+        subject: 'PaarcelMate - Verify Your Email',
         text: `Your verification code is: ${otp}. This code will expire in 10 minutes.`,
         html: `
           <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -160,7 +160,7 @@ export class OtpService {
     // const twilioSid = this.config.get('TWILIO_ACCOUNT_SID');
     // if (twilioSid && twilioSid !== 'your_twilio_account_sid') {
     //   await this.twilioClient.messages.create({
-    //     body: `Your ParcelMate verification code is: ${otp}`,
+    //     body: `Your PaarcelMate verification code is: ${otp}`,
     //     from: this.config.get('TWILIO_PHONE_NUMBER'),
     //     to: phone,
     //   });

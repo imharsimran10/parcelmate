@@ -56,7 +56,7 @@ async function bootstrap() {
   // Swagger Documentation
   if (configService.get('NODE_ENV') !== 'production') {
     const config = new DocumentBuilder()
-      .setTitle('ParcelMate API')
+      .setTitle('PaarcelMate API')
       .setDescription('P2P Parcel Delivery Platform API Documentation')
       .setVersion('1.0')
       .addBearerAuth()
@@ -80,7 +80,7 @@ async function bootstrap() {
   await app.listen(port);
 
   console.log(`
-    🚀 ParcelMate API is running!
+    🚀 PaarcelMate API is running!
     📡 URL: http://localhost:${port}
     📚 Docs: http://localhost:${port}/api/docs
     🌍 Environment: ${configService.get('NODE_ENV')}

@@ -1,4 +1,4 @@
-# ParcelMate - Project Summary
+# PaarcelMate - Project Summary
 
 ## 🎉 What Has Been Built
 
