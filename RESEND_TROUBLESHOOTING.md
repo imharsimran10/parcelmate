@@ -2,7 +2,7 @@
 
 ## Current Issue
 
-The API key `re_XKdv8tn7_2AgZqdvhkFqf9ejXEvcoJmk2` is returning:
+The API key `re_YOUR_RESEND_API_KEY_HERE` is returning:
 ```
 "application_error": "Unable to fetch data. The request could not be resolved."
 ```

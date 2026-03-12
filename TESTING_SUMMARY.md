@@ -124,9 +124,9 @@ JWT_REFRESH_SECRET=...
 SMTP_HOST=smtp.gmail.com
 SMTP_PORT=465
 SMTP_SECURE=true
-SMTP_USER=paarcelmate@gmail.com
-SMTP_PASS=ycaqgoixieagabpm
-SMTP_FROM_EMAIL=paarcelmate@gmail.com
+SMTP_USER=your-email@gmail.com
+SMTP_PASS=your-gmail-app-password
+SMTP_FROM_EMAIL=your-email@gmail.com
 
 # Optional (for full feature set)
 STRIPE_SECRET_KEY=...

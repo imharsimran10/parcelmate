@@ -7,7 +7,7 @@
 
 ## Issue
 
-The Resend API key (`re_XKdv8tn7_2AgZqdvhkFqf9ejXEvcoJmk2`) is returning an error:
+The Resend API key (`re_YOUR_RESEND_API_KEY_HERE`) is returning an error:
 ```
 "application_error": "Unable to fetch data. The request could not be resolved."
 ```
@@ -19,7 +19,7 @@ The Resend API key (`re_XKdv8tn7_2AgZqdvhkFqf9ejXEvcoJmk2`) is returning an erro
 1. **Login to Resend**: https://resend.com/login
 2. **Go to API Keys**: https://resend.com/api-keys
 3. **Check your API key status**:
-   - Ensure the key `re_XKdv8tn7_2AgZqdvhkFqf9ejXEvcoJmk2` exists
+   - Ensure the key `re_YOUR_RESEND_API_KEY_HERE` exists
    - Verify it's **active** (not disabled)
    - Check if there are any restrictions or limits
 

@@ -24,8 +24,7 @@ Complete guide to deploy PaarcelMate to production using Vercel, Railway, and ma
 
 ### Email Service
 - Gmail account with App Password configured
-- Current: paarcelmate@gmail.com
-- App Password: ycaqgoixieagabpm
+- Configure your Gmail account and generate app password at: https://myaccount.google.com/apppasswords
 
 ---
 
@@ -138,9 +137,9 @@ Complete guide to deploy PaarcelMate to production using Vercel, Railway, and ma
    SMTP_HOST=smtp.gmail.com
    SMTP_PORT=465
    SMTP_SECURE=true
-   SMTP_USER=paarcelmate@gmail.com
-   SMTP_PASS=ycaqgoixieagabpm
-   SMTP_FROM_EMAIL=paarcelmate@gmail.com
+   SMTP_USER=your-email@gmail.com
+   SMTP_PASS=your-gmail-app-password
+   SMTP_FROM_EMAIL=your-email@gmail.com
    SMTP_FROM_NAME=PaarcelMate
 
    # CORS (add your frontend URL)

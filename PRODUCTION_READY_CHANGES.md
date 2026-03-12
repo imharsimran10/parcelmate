@@ -9,7 +9,7 @@ This document summarizes all production-ready changes implemented to make Paarce
 
 **Changes:**
 - Replaced SendGrid with Resend email service (3000 emails/month free tier)
-- Integrated Resend API with key: `re_XKdv8tn7_2AgZqdvhkFqf9ejXEvcoJmk2`
+- Integrated Resend API with key: `re_YOUR_RESEND_API_KEY_HERE`
 - Created beautiful branded HTML email template with:
   - Gradient header with PaarcelMate branding
   - Centered OTP display with monospace font
@@ -170,7 +170,7 @@ CORS_ORIGINS=http://localhost:3001,https://yourdomain.com,https://www.yourdomain
 **Key Environment Variables:**
 ```env
 # Backend
-RESEND_API_KEY=re_XKdv8tn7_2AgZqdvhkFqf9ejXEvcoJmk2
+RESEND_API_KEY=re_YOUR_RESEND_API_KEY_HERE
 CORS_ORIGINS=http://localhost:3001,https://yourdomain.com
 NODE_ENV=production
 APP_NAME=PaarcelMate
@@ -291,7 +291,7 @@ NEXT_PUBLIC_WS_URL=wss://api.paarcelmate.com
 ## 📧 Email Configuration
 
 ### Resend Setup:
-1. **API Key**: `re_XKdv8tn7_2AgZqdvhkFqf9ejXEvcoJmk2`
+1. **API Key**: `re_YOUR_RESEND_API_KEY_HERE`
 2. **From Address**: `PaarcelMate <onboarding@resend.dev>`
 3. **Monthly Limit**: 3000 emails (free tier)
 4. **Email Template**: Branded with gradient header, responsive design
