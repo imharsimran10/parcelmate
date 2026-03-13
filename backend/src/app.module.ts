@@ -21,7 +21,7 @@ import { MatchingModule } from './modules/matching/matching.module';
 import { ReviewsModule } from './modules/reviews/reviews.module';
 import { MessagesModule } from './modules/messages/messages.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
-import { TrackingModule } from './modules/tracking/tracking.module';
+// import { TrackingModule } from './modules/tracking/tracking.module'; // Disabled for Vercel (WebSockets not supported)
 import { AdminModule } from './modules/admin/admin.module';
 import { HealthController } from './health.controller';
 
@@ -77,7 +77,7 @@ import { HealthController } from './health.controller';
     ReviewsModule,
     MessagesModule,
     NotificationsModule,
-    TrackingModule,
+    // TrackingModule, // Disabled for Vercel (WebSockets not supported)
     AdminModule,
   ],
   controllers: [HealthController],
