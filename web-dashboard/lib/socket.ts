@@ -2,7 +2,16 @@ import { io, Socket } from 'socket.io-client';
 
 let socket: Socket | null = null;
 
-export const initSocket = (token: string): Socket => {
+// WebSockets are disabled on Vercel serverless deployment
+const WEBSOCKETS_ENABLED = process.env.NEXT_PUBLIC_WEBSOCKETS_ENABLED === 'true';
+
+export const initSocket = (token: string): Socket | null => {
+  // Skip socket initialization if WebSockets are disabled
+  if (!WEBSOCKETS_ENABLED) {
+    console.log('WebSockets are disabled in production deployment');
+    return null;
+  }
+
   if (socket?.connected) {
     return socket;
   }

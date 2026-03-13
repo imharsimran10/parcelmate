@@ -11,7 +11,8 @@ export const useSocket = () => {
     if (!accessToken) return;
 
     // Initialize socket if not already connected
-    if (!socketRef.current || !socketRef.current.connected) {
+    // Will return null if WebSockets are disabled
+    if (!socketRef.current || !socketRef.current?.connected) {
       socketRef.current = initSocket(accessToken);
     }
 

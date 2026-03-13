@@ -164,31 +164,41 @@ export class UsersService {
       throw new NotFoundException('User not found');
     }
 
-    // Get additional statistics
-    const [totalEarnings, receivedReviews, givenReviews] = await Promise.all([
-      this.prisma.payment.aggregate({
-        where: {
-          senderId: userId,
-          status: 'RELEASED',
-        },
-        _sum: {
-          parcelFee: true,
-        },
-      }),
-      this.prisma.review.count({
-        where: { recipientId: userId },
-      }),
-      this.prisma.review.count({
-        where: { authorId: userId },
-      }),
-    ]);
+    // Get additional statistics with error handling for new users
+    try {
+      const [totalEarnings, receivedReviews, givenReviews] = await Promise.all([
+        this.prisma.payment.aggregate({
+          where: {
+            senderId: userId,
+            status: 'RELEASED',
+          },
+          _sum: {
+            parcelFee: true,
+          },
+        }).catch(() => ({ _sum: { parcelFee: null } })),
+        this.prisma.review.count({
+          where: { recipientId: userId },
+        }).catch(() => 0),
+        this.prisma.review.count({
+          where: { authorId: userId },
+        }).catch(() => 0),
+      ]);
 
-    return {
-      ...user,
-      totalEarnings: totalEarnings._sum.parcelFee || 0,
-      receivedReviews,
-      givenReviews,
-    };
+      return {
+        ...user,
+        totalEarnings: totalEarnings._sum.parcelFee || 0,
+        receivedReviews,
+        givenReviews,
+      };
+    } catch (error) {
+      // Return default statistics if queries fail
+      return {
+        ...user,
+        totalEarnings: 0,
+        receivedReviews: 0,
+        givenReviews: 0,
+      };
+    }
   }
 
   async getUserReviews(userId: string, page: number = 1, limit: number = 10) {
