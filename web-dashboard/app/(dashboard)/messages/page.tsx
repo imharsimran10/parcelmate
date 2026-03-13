@@ -18,6 +18,7 @@ import api from "@/lib/api";
 import { toast } from "sonner";
 import { format, formatDistanceToNow } from "date-fns";
 import { useAuthStore } from "@/stores/authStore";
+import { useRealtimeMessages } from "@/hooks/useRealtimeMessages";
 
 export default function MessagesPage() {
   const [conversations, setConversations] = useState<any[]>([]);
@@ -25,7 +26,6 @@ export default function MessagesPage() {
   const [selectedConversation, setSelectedConversation] = useState<any | null>(
     null,
   );
-  const [messages, setMessages] = useState<any[]>([]);
   const [newMessage, setNewMessage] = useState("");
   const [isLoading, setIsLoading] = useState(true);
   const [isSending, setIsSending] = useState(false);
@@ -34,15 +34,19 @@ export default function MessagesPage() {
   const user = useAuthStore((state) => state.user);
   const role = useAuthStore((state) => state.role);
 
-  useEffect(() => {
-    fetchConversations();
-  }, []);
+  // Use real-time messages hook
+  const { messages, isLoading: messagesLoading, setMessages } = useRealtimeMessages({
+    parcelId: selectedConversation?.parcelId || null,
+    userId: user?.id,
+    enabled: !!selectedConversation,
+  });
 
   useEffect(() => {
-    if (selectedConversation) {
-      fetchMessages(selectedConversation.parcelId);
-    }
-  }, [selectedConversation]);
+    fetchConversations();
+    // Set up polling for conversations list (updates every 10 seconds)
+    const interval = setInterval(fetchConversations, 10000);
+    return () => clearInterval(interval);
+  }, []);
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -81,26 +85,11 @@ export default function MessagesPage() {
       setConversations(convs);
     } catch (error) {
       console.error("Failed to fetch conversations:", error);
-      toast.error("Failed to load conversations");
+      if (isLoading) {
+        toast.error("Failed to load conversations");
+      }
     } finally {
       setIsLoading(false);
-    }
-  };
-
-  const fetchMessages = async (parcelId: string) => {
-    try {
-      const response = await api.get(`/messages/parcel/${parcelId}`);
-      const msgs = response.data?.data || response.data || [];
-      setMessages(msgs);
-      await api.post(`/messages/parcel/${parcelId}/mark-read`);
-      setConversations((prev) =>
-        prev.map((conv) =>
-          conv.parcelId === parcelId ? { ...conv, unreadCount: 0 } : conv,
-        ),
-      );
-    } catch (error) {
-      console.error("Failed to fetch messages:", error);
-      toast.error("Failed to load messages");
     }
   };
 
@@ -115,12 +104,22 @@ export default function MessagesPage() {
         content: newMessage.trim(),
       });
       const sentMessage = response.data?.data || response.data;
-      setMessages((prev) => [...prev, sentMessage]);
+
+      // The real-time subscription will handle adding the message
+      // But we optimistically add it for immediate feedback
+      setMessages((prev) => {
+        const exists = prev.some(m => m.id === sentMessage.id);
+        if (exists) return prev;
+        return [...prev, sentMessage];
+      });
+
       setNewMessage("");
+
+      // Update conversation list
       setConversations((prev) =>
         prev.map((conv) =>
           conv.parcelId === selectedConversation.parcelId
-            ? { ...conv, lastMessage: sentMessage }
+            ? { ...conv, lastMessage: sentMessage, updatedAt: sentMessage.createdAt }
             : conv,
         ),
       );
