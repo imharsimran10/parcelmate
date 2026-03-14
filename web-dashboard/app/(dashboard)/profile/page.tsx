@@ -83,11 +83,31 @@ export default function ProfilePage() {
   const handleSave = async () => {
     setIsLoading(true);
     try {
-      await api.put('/users/profile', profile);
+      // Filter out empty strings and only send fields with actual values
+      const updateData: any = {};
+
+      Object.entries(profile).forEach(([key, value]) => {
+        if (value !== '' && value !== null && value !== undefined) {
+          // For arrays, only include if not empty
+          if (Array.isArray(value)) {
+            if (value.length > 0) {
+              updateData[key] = value;
+            }
+          } else {
+            updateData[key] = value;
+          }
+        }
+      });
+
+      await api.put('/users/profile', updateData);
       toast.success('Profile updated successfully');
       setIsEditing(false);
-    } catch (error) {
-      toast.error('Failed to update profile');
+      // Refresh profile data
+      await fetchProfile();
+    } catch (error: any) {
+      console.error('Profile update error:', error);
+      const message = error.response?.data?.message || 'Failed to update profile';
+      toast.error(Array.isArray(message) ? message.join(', ') : message);
     } finally {
       setIsLoading(false);
     }

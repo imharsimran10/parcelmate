@@ -1,5 +1,10 @@
 import { ApiProperty } from '@nestjs/swagger';
 import { IsString, IsOptional, IsDateString, MinLength, IsArray } from 'class-validator';
+import { Transform } from 'class-transformer';
+
+// Helper to transform empty strings to undefined
+const TransformEmptyStringToUndefined = () =>
+  Transform(({ value }) => (value === '' ? undefined : value));
 
 export class UpdateProfileDto {
   @ApiProperty({ example: 'John', required: false })
@@ -22,6 +27,7 @@ export class UpdateProfileDto {
   @ApiProperty({ example: '1990-01-01', required: false })
   @IsOptional()
   @IsDateString()
+  @TransformEmptyStringToUndefined()
   dateOfBirth?: string;
 
   @ApiProperty({ example: 'Passionate traveler and reliable courier', required: false })
