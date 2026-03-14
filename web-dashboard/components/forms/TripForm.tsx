@@ -51,6 +51,10 @@ export default function TripForm({ initialData, tripId }: TripFormProps) {
   const [originState, setOriginState] = useState('');
   const [destinationCountry, setDestinationCountry] = useState('');
   const [destinationState, setDestinationState] = useState('');
+  const [originCitySelect, setOriginCitySelect] = useState('');
+  const [destinationCitySelect, setDestinationCitySelect] = useState('');
+  const [showOriginCityInput, setShowOriginCityInput] = useState(false);
+  const [showDestinationCityInput, setShowDestinationCityInput] = useState(false);
 
   const {
     register,
@@ -233,21 +237,52 @@ export default function TripForm({ initialData, tripId }: TripFormProps) {
 
             <div className="space-y-2">
               <Label htmlFor="originCity">City *</Label>
-              <Select
-                onValueChange={(value) => setValue('originCity', value)}
-                disabled={!originState}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder={originState ? "Select city" : "Select state first"} />
-                </SelectTrigger>
-                <SelectContent>
-                  {getCitiesByState(originCountry, originState).map((city) => (
-                    <SelectItem key={city} value={city}>
-                      {city}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {!showOriginCityInput ? (
+                <Select
+                  value={originCitySelect}
+                  onValueChange={(value) => {
+                    setOriginCitySelect(value);
+                    if (value === 'Other') {
+                      setShowOriginCityInput(true);
+                      setValue('originCity', '');
+                    } else {
+                      setValue('originCity', value);
+                    }
+                  }}
+                  disabled={!originState}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={originState ? "Select city" : "Select state first"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {getCitiesByState(originCountry, originState).map((city) => (
+                      <SelectItem key={city} value={city}>
+                        {city}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : (
+                <div className="space-y-2">
+                  <Input
+                    id="originCity"
+                    type="text"
+                    placeholder="Enter your city name"
+                    {...register('originCity')}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowOriginCityInput(false);
+                      setOriginCitySelect('');
+                      setValue('originCity', '');
+                    }}
+                    className="text-xs text-primary hover:underline"
+                  >
+                    ← Back to list
+                  </button>
+                </div>
+              )}
               {errors.originCity && (
                 <p className="text-sm text-destructive">{errors.originCity.message}</p>
               )}
@@ -330,21 +365,52 @@ export default function TripForm({ initialData, tripId }: TripFormProps) {
 
             <div className="space-y-2">
               <Label htmlFor="destinationCity">City *</Label>
-              <Select
-                onValueChange={(value) => setValue('destinationCity', value)}
-                disabled={!destinationState}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder={destinationState ? "Select city" : "Select state first"} />
-                </SelectTrigger>
-                <SelectContent>
-                  {getCitiesByState(destinationCountry, destinationState).map((city) => (
-                    <SelectItem key={city} value={city}>
-                      {city}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {!showDestinationCityInput ? (
+                <Select
+                  value={destinationCitySelect}
+                  onValueChange={(value) => {
+                    setDestinationCitySelect(value);
+                    if (value === 'Other') {
+                      setShowDestinationCityInput(true);
+                      setValue('destinationCity', '');
+                    } else {
+                      setValue('destinationCity', value);
+                    }
+                  }}
+                  disabled={!destinationState}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={destinationState ? "Select city" : "Select state first"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {getCitiesByState(destinationCountry, destinationState).map((city) => (
+                      <SelectItem key={city} value={city}>
+                        {city}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : (
+                <div className="space-y-2">
+                  <Input
+                    id="destinationCity"
+                    type="text"
+                    placeholder="Enter your city name"
+                    {...register('destinationCity')}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowDestinationCityInput(false);
+                      setDestinationCitySelect('');
+                      setValue('destinationCity', '');
+                    }}
+                    className="text-xs text-primary hover:underline"
+                  >
+                    ← Back to list
+                  </button>
+                </div>
+              )}
               {errors.destinationCity && (
                 <p className="text-sm text-destructive">{errors.destinationCity.message}</p>
               )}
