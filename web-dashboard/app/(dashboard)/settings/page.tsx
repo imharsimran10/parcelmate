@@ -38,20 +38,51 @@ export default function SettingsPage() {
   const handleUpdateAccount = async () => {
     setIsLoading(true);
     try {
-      await api.put('/users/profile', { email, phone });
+      // Filter out empty values before sending
+      const updateData: any = {};
+
+      if (email && email.trim() !== '') {
+        updateData.email = email.trim();
+      }
+      if (phone && phone.trim() !== '') {
+        updateData.phone = phone.trim();
+      }
+
+      // Only send if there's data to update
+      if (Object.keys(updateData).length === 0) {
+        toast.error('No changes to save');
+        setIsLoading(false);
+        return;
+      }
+
+      await api.put('/users/profile', updateData);
       toast.success('Account updated successfully');
-    } catch (error) {
-      toast.error('Failed to update account');
+    } catch (error: any) {
+      console.error('Account update error:', error);
+      const message = error.response?.data?.message || 'Failed to update account';
+      toast.error(Array.isArray(message) ? message.join(', ') : message);
     } finally {
       setIsLoading(false);
     }
   };
 
   const handleChangePassword = async () => {
-    if (newPassword !== confirmPassword) {
-      toast.error('Passwords do not match');
+    // Validate inputs
+    if (!currentPassword || !newPassword || !confirmPassword) {
+      toast.error('All password fields are required');
       return;
     }
+
+    if (newPassword !== confirmPassword) {
+      toast.error('New passwords do not match');
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      toast.error('New password must be at least 8 characters');
+      return;
+    }
+
     setIsLoading(true);
     try {
       await api.put('/users/password', {
@@ -62,8 +93,10 @@ export default function SettingsPage() {
       setCurrentPassword('');
       setNewPassword('');
       setConfirmPassword('');
-    } catch (error) {
-      toast.error('Failed to change password');
+    } catch (error: any) {
+      console.error('Password change error:', error);
+      const message = error.response?.data?.message || 'Failed to change password';
+      toast.error(Array.isArray(message) ? message.join(', ') : message);
     } finally {
       setIsLoading(false);
     }
