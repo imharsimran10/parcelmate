@@ -71,6 +71,10 @@ export default function ParcelForm({ initialData, parcelId }: ParcelFormProps) {
   const [pickupState, setPickupState] = useState('');
   const [deliveryCountry, setDeliveryCountry] = useState('');
   const [deliveryState, setDeliveryState] = useState('');
+  const [pickupCitySelect, setPickupCitySelect] = useState('');
+  const [deliveryCitySelect, setDeliveryCitySelect] = useState('');
+  const [showPickupCityInput, setShowPickupCityInput] = useState(false);
+  const [showDeliveryCityInput, setShowDeliveryCityInput] = useState(false);
 
   const {
     register,
@@ -338,21 +342,52 @@ export default function ParcelForm({ initialData, parcelId }: ParcelFormProps) {
 
             <div className="space-y-2">
               <Label htmlFor="pickupCity">City *</Label>
-              <Select
-                onValueChange={(value) => setValue('pickupCity', value)}
-                disabled={!pickupState}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder={pickupState ? "Select city" : "Select state first"} />
-                </SelectTrigger>
-                <SelectContent>
-                  {getCitiesByState(pickupCountry, pickupState).map((city) => (
-                    <SelectItem key={city} value={city}>
-                      {city}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {!showPickupCityInput ? (
+                <Select
+                  value={pickupCitySelect}
+                  onValueChange={(value) => {
+                    setPickupCitySelect(value);
+                    if (value === 'Other') {
+                      setShowPickupCityInput(true);
+                      setValue('pickupCity', '');
+                    } else {
+                      setValue('pickupCity', value);
+                    }
+                  }}
+                  disabled={!pickupState}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={pickupState ? "Select city" : "Select state first"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {getCitiesByState(pickupCountry, pickupState).map((city) => (
+                      <SelectItem key={city} value={city}>
+                        {city}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : (
+                <div className="space-y-2">
+                  <Input
+                    id="pickupCity"
+                    type="text"
+                    placeholder="Enter your city name"
+                    {...register('pickupCity')}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowPickupCityInput(false);
+                      setPickupCitySelect('');
+                      setValue('pickupCity', '');
+                    }}
+                    className="text-xs text-primary hover:underline"
+                  >
+                    ← Back to list
+                  </button>
+                </div>
+              )}
               {errors.pickupCity && (
                 <p className="text-sm text-destructive">{errors.pickupCity.message}</p>
               )}
@@ -472,21 +507,52 @@ export default function ParcelForm({ initialData, parcelId }: ParcelFormProps) {
 
             <div className="space-y-2">
               <Label htmlFor="deliveryCity">City *</Label>
-              <Select
-                onValueChange={(value) => setValue('deliveryCity', value)}
-                disabled={!deliveryState}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder={deliveryState ? "Select city" : "Select state first"} />
-                </SelectTrigger>
-                <SelectContent>
-                  {getCitiesByState(deliveryCountry, deliveryState).map((city) => (
-                    <SelectItem key={city} value={city}>
-                      {city}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+              {!showDeliveryCityInput ? (
+                <Select
+                  value={deliveryCitySelect}
+                  onValueChange={(value) => {
+                    setDeliveryCitySelect(value);
+                    if (value === 'Other') {
+                      setShowDeliveryCityInput(true);
+                      setValue('deliveryCity', '');
+                    } else {
+                      setValue('deliveryCity', value);
+                    }
+                  }}
+                  disabled={!deliveryState}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder={deliveryState ? "Select city" : "Select state first"} />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {getCitiesByState(deliveryCountry, deliveryState).map((city) => (
+                      <SelectItem key={city} value={city}>
+                        {city}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              ) : (
+                <div className="space-y-2">
+                  <Input
+                    id="deliveryCity"
+                    type="text"
+                    placeholder="Enter your city name"
+                    {...register('deliveryCity')}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setShowDeliveryCityInput(false);
+                      setDeliveryCitySelect('');
+                      setValue('deliveryCity', '');
+                    }}
+                    className="text-xs text-primary hover:underline"
+                  >
+                    ← Back to list
+                  </button>
+                </div>
+              )}
               {errors.deliveryCity && (
                 <p className="text-sm text-destructive">{errors.deliveryCity.message}</p>
               )}
