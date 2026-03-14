@@ -150,7 +150,7 @@ export default function DeliveryConfirmationModal({
                 OTP sent to recipient: {recipientInfo?.recipientName}
               </p>
               <p className="text-xs text-muted-foreground">
-                Ending with ****{recipientInfo?.recipientPhone}
+                Email: {recipientInfo?.recipientEmail}
               </p>
             </div>
 
